@@ -1,0 +1,94 @@
+// Autonomous Fire Fighting Robot
+// Arduino UNO
+// Flame Sensor + L298N + Motors + Relay/Pump
+
+// Flame sensor
+int flameSensor = 2;
+
+// Relay / Water Pump
+int pumpRelay = 8;
+
+// L298N Motor Driver
+int ENA = 5;
+int IN1 = 6;
+int IN2 = 7;
+
+int ENB = 9;
+int IN3 = 10;
+int IN4 = 11;
+
+void setup() {
+  pinMode(flameSensor, INPUT);
+
+  pinMode(pumpRelay, OUTPUT);
+
+  pinMode(ENA, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+
+  pinMode(ENB, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+
+  digitalWrite(pumpRelay, LOW);
+
+  Serial.begin(9600);
+}
+
+void loop() {
+
+  int fire = digitalRead(flameSensor);
+
+  Serial.println(fire);
+
+  if (fire == LOW) {
+    // Fire detected
+    Serial.println("Fire Detected!");
+
+    stopRobot();
+
+    // Turn ON water pump
+    digitalWrite(pumpRelay, HIGH);
+
+    delay(3000);
+
+    // Turn OFF pump
+    digitalWrite(pumpRelay, LOW);
+
+    stopRobot();
+  }
+  else {
+    // No fire detected
+    Serial.println("Searching for Fire...");
+
+    moveForward();
+  }
+
+  delay(100);
+}
+
+// Move robot forward
+void moveForward() {
+
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2, LOW);
+
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4, LOW);
+
+  analogWrite(ENA, 180);
+  analogWrite(ENB, 180);
+}
+
+// Stop robot
+void stopRobot() {
+
+  digitalWrite(IN1, LOW);
+  digitalWrite(IN2, LOW);
+
+  digitalWrite(IN3, LOW);
+  digitalWrite(IN4, LOW);
+
+  analogWrite(ENA, 0);
+  analogWrite(ENB, 0);
+}
